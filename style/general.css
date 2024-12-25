@@ -1,0 +1,63 @@
+/*-------------------------------------------------------------------------------------------------
+ *  Copyright (C) 2024 Intel Corporation. All rights reserved.
+ *  Licensed under the Apache License 2.0. See LICENSE in the project root for license information.
+ *  SPDX-License-Identifier: Apache-2.0
+ *-----------------------------------------------------------------------------------------------*/
+
+body {
+  /* background-image: linear-gradient(
+    to right top,
+    #2376f6,
+    #008bf3,
+    #0099e2,
+    #00a3cb,
+    #14aab5,
+    #41aa9d,
+    #62a987,
+    #7fa576,
+    #989855,
+    #b58445,
+    #cc6b50,
+    #d55372
+  );
+  background-attachment: fixed; */
+  background: rgba(0, 7, 52, 1) center / cover no-repeat
+    fixed;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.text-shadow-sm {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.show {
+  display: block;
+}
+
+.absolute_center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.divider {
+  width: 95%;
+  margin: 10px auto;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.main-content {
+  flex: 1;
+}
+
+footer {
+  padding: 0 10px 10px 10px;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 1px solid transparent;
+}

@@ -1,0 +1,70 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="demos.js"></script>
+</head>
+
+<body class="bg-gradient-to-b from-orange-100">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-6xl font-bold mb-6 text-center text-blue-900">WebAI Demos</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="video-container" />
+  </div>
+
+  <script>
+    "use strict";
+
+    function capitalize(s) {
+      return s && String(s[0]).toUpperCase() + String(s).slice(1);
+    }
+    function setupDemos() {
+      const videoContainer = document.getElementById("video-container");
+      for (let demo of demos.sort((a, b) => (a.date > b.date ? -1 : 1))) {
+        const a = document.createElement("a");
+        a.className = "group relative flex h-[250px] 2xl:h-[360px]  flex-col gap-6 rounded-xl overflow-hidden border-2 border-blue-900 shadow-2xl";
+        a.href = demo.url;
+        videoContainer.appendChild(a);
+
+        const videoDiv = document.createElement("div");
+        videoDiv.className = "absolute inset-0 h-1/2 2xl:h-[220px]  rounded-xl overflow-hidden group-hover:h-full w-full duration-[1000ms]";
+        a.appendChild(videoDiv);
+
+        const video = document.createElement("video");
+        video.className = "h-full w-full rounded-xl object-cover group-hover:scale-60 duration-1000";
+        video.poster = `assets/${demo.id}.png`;
+        video.src = `assets/${demo.id}.mp4`;
+        video.type = "video/mp4";
+        video.controls = false;
+        video.autoplay = false;
+        video.loop = true;
+        video.muted = true;
+        videoDiv.appendChild(video);
+
+        const propertiesDiv = document.createElement("div");
+        propertiesDiv.className = "px-3 mt-auto w-full h-1/2 2xl:h-[140px] flex flex-col";
+        for (let property of ['date', 'desc', 'framework']) {
+          const propertyDiv = document.createElement("div");
+          propertyDiv.className = "group-hover:hidden 2xl:pt-3 pt-3 2xl:text-lg/5 text-xs/3";
+          propertyDiv.textContent = `${capitalize(property)}: ${demo[property]}`;
+          propertiesDiv.appendChild(propertyDiv);
+        }
+        a.appendChild(propertiesDiv);
+      }
+
+      for (const video of document.querySelectorAll("video")) {
+        video.controls = false;
+        video.addEventListener("mouseover", () => {
+          video.play();
+        });
+        video.addEventListener("mouseout", () => {
+          video.load();
+        });
+      }
+    }
+
+    window.addEventListener("load", (event) => {
+      setupDemos();
+    });
+  </script>
+
+</body>
