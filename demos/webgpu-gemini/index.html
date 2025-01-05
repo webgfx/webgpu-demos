@@ -9,7 +9,7 @@
   <div>Output:</div>
   <div id="output"></div>
 </div>
-<script src="../util/util.js"></script>
+<script src="../../util/util.js"></script>
 <script type="module">
   "use strict";
 
@@ -42,15 +42,6 @@
       wps = (wordCount / (elapsedTime / 1000)).toFixed(2);
       wpsElement.innerHTML = `words/s: ${wps}`;
     }
-
-    /*
-    env.allowLocalModels = true;
-    env.localModelPath = 'models';
-    const tokenizer = await AutoTokenizer.from_pretrained('Xenova/gemma-tokenizer');
-    const tokenIds = tokenizer.encode(outputElement.innerHTML);
-    const tokenCount = tokenIds.length;
-    const tps = (tokenCount / (elapsedTime / 1000)).toFixed(2);
-    */
     const tps = (session.tokensSoFar / (elapsedTime / 1000)).toFixed(2);
     tpsElement.innerHTML = `tokens/s: ${tps}`;
   }
