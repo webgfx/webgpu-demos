@@ -11,6 +11,14 @@ const API = {
 };
 const demos = [
   {
+    id: "webgpu-deepseek-r1-qwen-1.5b",
+    api: API.WEBGPU,
+    date: "2025-01-26",
+    desc: "DeepSeek-R1-Distill-Qwen-1.5B",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/deepseek-r1-webgpu",
+  },
+  {
     id: "webgpu-smollm2",
     api: API.WEBGPU,
     date: "2024-12-25",
