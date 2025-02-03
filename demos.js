@@ -11,6 +11,14 @@ const API = {
 };
 const demos = [
   {
+    id: "webgpu-janus-pro-1b",
+    api: API.WEBGPU,
+    date: "2025-02-03",
+    desc: "DeepSeek-Janus-Pro-1B",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/janus-pro-webgpu",
+  },
+  {
     id: "webgpu-deepseek-r1-qwen-1.5b",
     api: API.WEBGPU,
     date: "2025-01-26",
