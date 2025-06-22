@@ -19,7 +19,7 @@ const demos = [
     date: "2025-06-22",
     desc: "Unity Project Prismatic",
     framework: FRAMEWORK.UNITY,
-    url: "https://boatattack-webgpu-updates-branch-a7.netlify.app/",
+    url: "https://www.crazygames.com/game/project-prismatic",
   },
   {
     id: "webgpu-boatattack",
