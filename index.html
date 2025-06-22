@@ -12,11 +12,10 @@
       <h1 class="main-title text-5xl font-bold mb-4">WebGPU Demos</h1>
     </div><!-- Tabs -->
     <div class="flex flex-col items-center mb-12 space-y-6"> <!-- Search Bar -->
-      <div class="search-container relative w-full max-w-md">
-        <input type="text" id="search-input" placeholder="Search demos..."
-          class="w-full px-6 py-3 rounded-full bg-transparent text-amber-900 placeholder-amber-700/60 focus:outline-none transition-all duration-300"
+      <div class="search-container relative w-full max-w-md">        <input type="text" id="search-input" placeholder="Search demos..."
+          class="w-full px-6 py-3 rounded-full bg-transparent text-white placeholder-white/60 focus:outline-none transition-all duration-300"
           oninput="handleSearch()" />
-        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-amber-700/60">
+        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60">
           🔍
         </div>
       </div>
@@ -109,10 +108,8 @@
       const videoContainer = document.getElementById("video-container");
       videoContainer.innerHTML = ''; // Clear existing content
 
-      const filteredDemos = getFilteredDemos();
-
-      if (filteredDemos.length === 0) {
-        videoContainer.innerHTML = '<div class="col-span-full text-center text-amber-900 text-xl">No demos available for this category</div>';
+      const filteredDemos = getFilteredDemos();      if (filteredDemos.length === 0) {
+        videoContainer.innerHTML = '<div class="col-span-full text-center text-white text-xl">No demos available for this category</div>';
         return;
       }
 
