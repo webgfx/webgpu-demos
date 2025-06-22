@@ -14,6 +14,14 @@ const CATEGORY = {
 
 const demos = [
   {
+    id: "webgpu-prismatic",
+    category: CATEGORY.WEBGPU,
+    date: "2025-06-22",
+    desc: "Unity Project Prismatic",
+    framework: FRAMEWORK.UNITY,
+    url: "https://boatattack-webgpu-updates-branch-a7.netlify.app/",
+  },
+  {
     id: "webgpu-boatattack",
     category: CATEGORY.WEBGPU,
     date: "2025-06-22",

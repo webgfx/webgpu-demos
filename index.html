@@ -12,7 +12,8 @@
       <h1 class="main-title text-5xl font-bold mb-4">WebGPU Demos</h1>
     </div><!-- Tabs -->
     <div class="flex flex-col items-center mb-12 space-y-6"> <!-- Search Bar -->
-      <div class="search-container relative w-full max-w-md">        <input type="text" id="search-input" placeholder="Search demos..."
+      <div class="search-container relative w-full max-w-md"> <input type="text" id="search-input"
+          placeholder="Search demos..."
           class="w-full px-6 py-3 rounded-full bg-transparent text-white placeholder-white/60 focus:outline-none transition-all duration-300"
           oninput="handleSearch()" />
         <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60">
@@ -108,7 +109,7 @@
       const videoContainer = document.getElementById("video-container");
       videoContainer.innerHTML = ''; // Clear existing content
 
-      const filteredDemos = getFilteredDemos();      if (filteredDemos.length === 0) {
+      const filteredDemos = getFilteredDemos(); if (filteredDemos.length === 0) {
         videoContainer.innerHTML = '<div class="col-span-full text-center text-white text-xl">No demos available for this category</div>';
         return;
       }
@@ -123,7 +124,7 @@
 
         const videoDiv = document.createElement("div");
         videoDiv.className = "absolute inset-0 h-3/5 rounded-t-2xl overflow-hidden group-hover:h-4/5 w-full duration-700 ease-out";
-        a.appendChild(videoDiv);        const video = document.createElement("video");
+        a.appendChild(videoDiv); const video = document.createElement("video");
         video.className = "h-full w-full object-cover group-hover:scale-105 duration-700 ease-out";
         video.poster = `assets/${demo.id}.png`;
         video.src = `assets/${demo.id}.mp4`;
@@ -131,35 +132,35 @@
         video.controls = false;
         video.autoplay = false;
         video.loop = true;
-        video.muted = true;        video.preload = "metadata";
-        
+        video.muted = true; video.preload = "metadata";
+
         let hasVideo = true;
-        
+
         // Handle video loading errors
         video.addEventListener("error", (e) => {
-          console.log(`Video ${demo.id} failed to load - using poster image only`);
+          //console.log(`Video ${demo.id} failed to load - using poster image only`);
           hasVideo = false;
         });
-        
+
         // Handle successful video load
         video.addEventListener("loadedmetadata", () => {
           hasVideo = true;
         });
-        
+
         videoDiv.appendChild(video);        // Add hover event listeners to the entire card for better UX
         a.addEventListener("mouseenter", () => {
           if (hasVideo) {
-            console.log(`Attempting to play video: ${demo.id}`);
+            //console.log(`Attempting to play video: ${demo.id}`);
             video.play().catch((error) => {
-              console.log(`Video ${demo.id} failed to play:`, error);
+              //console.log(`Video ${demo.id} failed to play:`, error);
               hasVideo = false;
             });
           }
         });
-        
+
         a.addEventListener("mouseleave", () => {
           if (hasVideo) {
-            console.log(`Pausing video: ${demo.id}`);
+            //console.log(`Pausing video: ${demo.id}`);
             video.pause();
             video.currentTime = 0;
           }
@@ -190,10 +191,10 @@
           const icon = property === 'date' ? '📅' : '🔧';
           propertyDiv.innerHTML = `<span class="mr-2">${icon}</span><span class="font-medium">${capitalize(property)}:</span> <span class="ml-1">${demo[property]}</span>`;
           detailsDiv.appendChild(propertyDiv);
-        }        propertiesDiv.appendChild(detailsDiv);
+        } propertiesDiv.appendChild(detailsDiv);
         a.appendChild(propertiesDiv);
       });
-    }window.addEventListener("load", (event) => {
+    } window.addEventListener("load", (event) => {
       updateTabCounts();
       setupDemos();
     });
