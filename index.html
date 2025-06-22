@@ -3,66 +3,201 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="demos.js"></script>
+  <link rel="stylesheet" href="style/general.css">
 </head>
 
-<body class="bg-gradient-to-b from-orange-100">
-  <div class="container mx-auto px-4 py-8">
-    <img src="assets/logo.png" class="mx-auto w-1/2 pb-10" />
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="video-container" />
+<body class="min-h-screen">
+  <div class="container mx-auto px-4 py-8"> <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="main-title text-5xl font-bold mb-4">WebGPU Demos</h1>
+    </div><!-- Tabs -->
+    <div class="flex flex-col items-center mb-12 space-y-6"> <!-- Search Bar -->
+      <div class="search-container relative w-full max-w-md">
+        <input type="text" id="search-input" placeholder="Search demos..."
+          class="w-full px-6 py-3 rounded-full bg-transparent text-amber-900 placeholder-amber-700/60 focus:outline-none transition-all duration-300"
+          oninput="handleSearch()" />
+        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-amber-700/60">
+          🔍
+        </div>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tab-buttons flex bg-white/10 backdrop-blur-lg rounded-full p-2 shadow-lg">
+        <button id="webai-tab"
+          class="tab-active px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out"
+          onclick="switchTab('webai')">
+          WebAI
+        </button>
+        <button id="webgpu-tab"
+          class="tab-inactive px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out ml-2"
+          onclick="switchTab('webgpu')">
+          WebGPU
+        </button>
+      </div>
+    </div> <!-- Demo Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="video-container"></div>
   </div>
-
   <script>
-    "use strict";
+    "use strict"; let currentTab = 'webai';
+    let searchQuery = '';
 
     function capitalize(s) {
       return s && String(s[0]).toUpperCase() + String(s).slice(1);
     }
-    function setupDemos() {
+
+    function handleSearch() {
+      searchQuery = document.getElementById('search-input').value.toLowerCase();
+      setupDemos();
+    } function updateTabCounts() {
+      const webaiCount = demos.filter(demo => demo.category === 'WebAI').length;
+      const webgpuCount = demos.filter(demo => demo.category === 'WebGPU').length;
+
+      document.getElementById('webai-tab').innerHTML = `WebAI <span class="ml-1 px-2 py-1 bg-white/20 rounded-full text-xs">${webaiCount}</span>`;
+      document.getElementById('webgpu-tab').innerHTML = `WebGPU <span class="ml-1 px-2 py-1 bg-white/20 rounded-full text-xs">${webgpuCount}</span>`;
+    } function switchTab(tab) {
+      if (currentTab === tab) return; // Don't switch if already on this tab
+
+      currentTab = tab;
+
+      // Clear search when switching tabs
+      document.getElementById('search-input').value = '';
+      searchQuery = '';
+
+      // Update tab styles with animation
+      const webaiTab = document.getElementById('webai-tab');
+      const webgpuTab = document.getElementById('webgpu-tab');
+
+      if (tab === 'webai') {
+        webaiTab.className = 'tab-active px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out';
+        webgpuTab.className = 'tab-inactive px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out ml-2';
+      } else {
+        webaiTab.className = 'tab-inactive px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out';
+        webgpuTab.className = 'tab-active px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out ml-2';
+      }
+
+      // Show loading state
+      showLoading();
+
+      // Re-render demos with a slight delay for smooth transition
+      setTimeout(() => {
+        setupDemos();
+      }, 200);
+    }
+
+    function showLoading() {
       const videoContainer = document.getElementById("video-container");
-      for (let demo of demos.sort((a, b) => (a.date > b.date ? -1 : 1))) {
+      videoContainer.innerHTML = '<div class="loading col-span-full"><div class="spinner"></div></div>';
+    } function getFilteredDemos() {
+      let filteredDemos;
+
+      if (currentTab === 'webai') {
+        filteredDemos = demos.filter(demo => demo.category === 'WebAI');
+      } else {
+        filteredDemos = demos.filter(demo => demo.category === 'WebGPU');
+      }
+
+      // Apply search filter
+      if (searchQuery) {
+        filteredDemos = filteredDemos.filter(demo =>
+          demo.desc.toLowerCase().includes(searchQuery) ||
+          demo.framework.toLowerCase().includes(searchQuery) ||
+          demo.date.includes(searchQuery)
+        );
+      }
+
+      return filteredDemos;
+    } function setupDemos() {
+      const videoContainer = document.getElementById("video-container");
+      videoContainer.innerHTML = ''; // Clear existing content
+
+      const filteredDemos = getFilteredDemos();
+
+      if (filteredDemos.length === 0) {
+        videoContainer.innerHTML = '<div class="col-span-full text-center text-amber-900 text-xl">No demos available for this category</div>';
+        return;
+      }
+
+      filteredDemos.sort((a, b) => (a.date > b.date ? -1 : 1)).forEach((demo, index) => {
         const a = document.createElement("a");
-        a.className = "group relative flex h-[250px] 2xl:h-[360px]  flex-col gap-6 rounded-xl overflow-hidden border-2 border-blue-900 shadow-2xl";
+        a.className = "demo-card group relative flex h-[320px] flex-col rounded-2xl overflow-hidden shadow-xl border border-white/20 fade-in";
+        a.style.animationDelay = `${index * 0.1}s`;
         a.href = demo.url;
+        a.target = "_blank"; // Open in new tab
         videoContainer.appendChild(a);
 
         const videoDiv = document.createElement("div");
-        videoDiv.className = "absolute inset-0 h-1/2 2xl:h-[220px]  rounded-xl overflow-hidden group-hover:h-full w-full duration-[1000ms]";
-        a.appendChild(videoDiv);
-
-        const video = document.createElement("video");
-        video.className = "h-full w-full rounded-xl object-cover group-hover:scale-60 duration-1000";
+        videoDiv.className = "absolute inset-0 h-3/5 rounded-t-2xl overflow-hidden group-hover:h-4/5 w-full duration-700 ease-out";
+        a.appendChild(videoDiv);        const video = document.createElement("video");
+        video.className = "h-full w-full object-cover group-hover:scale-105 duration-700 ease-out";
         video.poster = `assets/${demo.id}.png`;
         video.src = `assets/${demo.id}.mp4`;
         video.type = "video/mp4";
         video.controls = false;
         video.autoplay = false;
         video.loop = true;
-        video.muted = true;
-        videoDiv.appendChild(video);
+        video.muted = true;        video.preload = "metadata";
+        
+        let hasVideo = true;
+        
+        // Handle video loading errors
+        video.addEventListener("error", (e) => {
+          console.log(`Video ${demo.id} failed to load - using poster image only`);
+          hasVideo = false;
+        });
+        
+        // Handle successful video load
+        video.addEventListener("loadedmetadata", () => {
+          hasVideo = true;
+        });
+        
+        videoDiv.appendChild(video);        // Add hover event listeners to the entire card for better UX
+        a.addEventListener("mouseenter", () => {
+          if (hasVideo) {
+            console.log(`Attempting to play video: ${demo.id}`);
+            video.play().catch((error) => {
+              console.log(`Video ${demo.id} failed to play:`, error);
+              hasVideo = false;
+            });
+          }
+        });
+        
+        a.addEventListener("mouseleave", () => {
+          if (hasVideo) {
+            console.log(`Pausing video: ${demo.id}`);
+            video.pause();
+            video.currentTime = 0;
+          }
+        });
+
+        // Overlay gradient
+        const overlay = document.createElement("div");
+        overlay.className = "absolute inset-0 bg-gradient-to-t from-black/30 to-transparent";
+        videoDiv.appendChild(overlay);
 
         const propertiesDiv = document.createElement("div");
-        propertiesDiv.className = "px-3 mt-auto w-full h-1/2 2xl:h-[140px] flex flex-col";
-        for (let property of ['date', 'desc', 'framework']) {
+        propertiesDiv.className = "px-6 py-4 mt-auto w-full h-2/5 group-hover:h-1/5 flex flex-col justify-center bg-white transition-all duration-700 ease-out";
+
+        // Title
+        const titleDiv = document.createElement("h3");
+        titleDiv.className = "demo-title font-bold text-lg text-gray-800 mb-2 leading-tight group-hover:text-sm group-hover:mb-1 transition-all duration-300";
+        titleDiv.textContent = demo.desc;
+        propertiesDiv.appendChild(titleDiv);
+
+        // Details (shown only when not hovering)
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "group-hover:opacity-0 group-hover:h-0 transition-all duration-300 space-y-1";
+
+        for (let property of ['date', 'framework']) {
           const propertyDiv = document.createElement("div");
-          propertyDiv.className = "group-hover:hidden 2xl:pt-3 pt-3 2xl:text-lg/5 text-xs/3";
-          propertyDiv.textContent = `${capitalize(property)}: ${demo[property]}`;
-          propertiesDiv.appendChild(propertyDiv);
-        }
+          propertyDiv.className = "text-sm text-gray-600 flex items-center";
+
+          const icon = property === 'date' ? '📅' : '🔧';
+          propertyDiv.innerHTML = `<span class="mr-2">${icon}</span><span class="font-medium">${capitalize(property)}:</span> <span class="ml-1">${demo[property]}</span>`;
+          detailsDiv.appendChild(propertyDiv);
+        }        propertiesDiv.appendChild(detailsDiv);
         a.appendChild(propertiesDiv);
-      }
-
-      for (const video of document.querySelectorAll("video")) {
-        video.controls = false;
-        video.addEventListener("mouseover", () => {
-          video.play();
-        });
-        video.addEventListener("mouseout", () => {
-          video.load();
-        });
-      }
-    }
-
-    window.addEventListener("load", (event) => {
+      });
+    }window.addEventListener("load", (event) => {
+      updateTabCounts();
       setupDemos();
     });
   </script>
