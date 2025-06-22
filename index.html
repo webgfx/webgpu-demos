@@ -35,10 +35,28 @@
       </div>
     </div> <!-- Demo Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="video-container"></div>
-  </div>
-  <script>
+  </div>  <script>
     "use strict"; let currentTab = 'webai';
     let searchQuery = '';
+
+    // URL parameter functions
+    function getUrlParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    function updateUrlParameter(tab) {
+      const url = new URL(window.location);
+      url.searchParams.set('tab', tab);
+      window.history.replaceState({}, '', url);
+    }
+
+    function initializeFromUrl() {
+      const tabParam = getUrlParameter('tab');
+      if (tabParam && (tabParam === 'webai' || tabParam === 'webgpu')) {
+        currentTab = tabParam;
+      }
+    }
 
     function capitalize(s) {
       return s && String(s[0]).toUpperCase() + String(s).slice(1);
@@ -53,10 +71,11 @@
 
       document.getElementById('webai-tab').innerHTML = `WebAI <span class="ml-1 px-2 py-1 bg-white/20 rounded-full text-xs">${webaiCount}</span>`;
       document.getElementById('webgpu-tab').innerHTML = `WebGPU <span class="ml-1 px-2 py-1 bg-white/20 rounded-full text-xs">${webgpuCount}</span>`;
-    } function switchTab(tab) {
+    }    function switchTab(tab) {
       if (currentTab === tab) return; // Don't switch if already on this tab
 
       currentTab = tab;
+      updateUrlParameter(tab); // Update URL parameter
 
       // Clear search when switching tabs
       document.getElementById('search-input').value = '';
@@ -81,6 +100,19 @@
       setTimeout(() => {
         setupDemos();
       }, 200);
+    }
+
+    function updateTabUI() {
+      const webaiTab = document.getElementById('webai-tab');
+      const webgpuTab = document.getElementById('webgpu-tab');
+
+      if (currentTab === 'webai') {
+        webaiTab.className = 'tab-active px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out';
+        webgpuTab.className = 'tab-inactive px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out ml-2';
+      } else {
+        webaiTab.className = 'tab-inactive px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out';
+        webgpuTab.className = 'tab-active px-8 py-3 rounded-full font-semibold transition-all duration-300 ease-in-out ml-2';
+      }
     }
 
     function showLoading() {
@@ -194,8 +226,10 @@
         } propertiesDiv.appendChild(detailsDiv);
         a.appendChild(propertiesDiv);
       });
-    } window.addEventListener("load", (event) => {
+    }    window.addEventListener("load", (event) => {
+      initializeFromUrl(); // Initialize tab from URL parameter
       updateTabCounts();
+      updateTabUI(); // Update tab UI based on current tab
       setupDemos();
     });
   </script>
