@@ -13,6 +13,15 @@ const CATEGORY = {
 };
 
 const demos = [
+    {
+    // Silero VAD for voice activity detection, Whisper for speech recognition, SmolLM2-1.7B for text generation, Kokoro for text to speech
+    id: "webgpu-conversation",
+    category: CATEGORY.WEBAI,
+    date: "2025-06-24",
+    desc: "Conversational WebGPU",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/conversational-webgpu",
+  },
   {
     id: "webgpu-prismatic",
     category: CATEGORY.WEBGPU,
