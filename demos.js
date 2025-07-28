@@ -5,15 +5,24 @@ const FRAMEWORK = {
   JS: "Vanilla JavaScript",
   ONNX: "ONNX Runtime Web",
   UNITY: "Unity",
-}
+};
 
 const CATEGORY = {
-  WEBAI: "WebAI",    // AI/ML focused demos
-  WEBGPU: "WebGPU"   // Graphics/compute focused demos
+  WEBAI: "WebAI", // AI/ML focused demos
+  WEBGPU: "WebGPU", // Graphics/compute focused demos
 };
 
 const demos = [
-    {
+  {
+    // Tiny Llama model (23M parameters) on 3 million high-quality @lichess games
+    id: "webgpu-chess",
+    category: CATEGORY.WEBAI,
+    date: "2025-07-23",
+    desc: "WebGPU Chess",
+    framework: FRAMEWORK.TJS,
+    url: "https://lazy-guy.github.io/chess-llama/",
+  },
+  {
     // Silero VAD for voice activity detection, Whisper for speech recognition, SmolLM2-1.7B for text generation, Kokoro for text to speech
     id: "webgpu-conversation",
     category: CATEGORY.WEBAI,
@@ -77,7 +86,8 @@ const demos = [
     desc: "Moonshine, a real-time speech recognition model",
     framework: FRAMEWORK.TJS,
     url: "https://huggingface.co/spaces/webml-community/moonshine-web",
-  }, {
+  },
+  {
     id: "webgpu-llama32",
     category: CATEGORY.WEBAI,
     date: "2024-10-02",
@@ -116,7 +126,8 @@ const demos = [
     desc: "SmolLM, a blazingly fast and powerful SLM",
     framework: FRAMEWORK.TJS,
     url: "https://huggingface.co/spaces/HuggingFaceTB/SmolLM-360M-Instruct-WebGPU",
-  }, {
+  },
+  {
     id: "webgpu-webllm",
     category: CATEGORY.WEBAI,
     date: "2024-06-09",
@@ -155,7 +166,8 @@ const demos = [
     desc: "Microsoft Florence2 - Advanced computer vision model",
     framework: FRAMEWORK.TJS,
     url: "https://huggingface.co/spaces/Xenova/florence2-webgpu",
-  }, {
+  },
+  {
     id: "webgpu-benchmark",
     category: CATEGORY.WEBAI,
     date: "2024-06-08",
@@ -194,7 +206,8 @@ const demos = [
     desc: "MODNet, real-time video background removal",
     framework: FRAMEWORK.TJS,
     url: "https://huggingface.co/spaces/Xenova/webgpu-video-background-removal",
-  }, {
+  },
+  {
     id: "webgpu-sam",
     category: CATEGORY.WEBAI,
     date: "2024-06-08",
