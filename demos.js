@@ -14,6 +14,14 @@ const CATEGORY = {
 
 const demos = [
   {
+    id: "webgpu-dinov3",
+    category: CATEGORY.WEBAI,
+    date: "2025-09-07",
+    desc: "DINOv3 Video Tracking",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/DINOv3-video-tracking",
+  },
+  {
     // Tiny Llama model (23M parameters) on 3 million high-quality @lichess games
     id: "webgpu-chess",
     category: CATEGORY.WEBAI,
