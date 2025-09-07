@@ -14,20 +14,28 @@ const CATEGORY = {
 
 const demos = [
   {
-    id: "webgpu-fastvlm",
-    category: CATEGORY.WEBAI,
-    date: "2025-09-07",
-    desc: "Apple FastVLM",
-    framework: FRAMEWORK.TJS,
-    url: "https://huggingface.co/spaces/webml-community/fastvlm-webgpu",
-  },
-  {
     id: "webgpu-dinov3",
     category: CATEGORY.WEBAI,
     date: "2025-09-07",
     desc: "DINOv3 Video Tracking",
     framework: FRAMEWORK.TJS,
     url: "https://huggingface.co/spaces/webml-community/DINOv3-video-tracking",
+  },
+  {
+    id: "webgpu-embeddinggemma",
+    category: CATEGORY.WEBAI,
+    date: "2025-09-07",
+    desc: "Google EmbeddingGemma",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/embeddinggemma-webgpu",
+  },
+  {
+    id: "webgpu-fastvlm",
+    category: CATEGORY.WEBAI,
+    date: "2025-09-07",
+    desc: "Apple FastVLM",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/fastvlm-webgpu",
   },
   {
     // Tiny Llama model (23M parameters) on 3 million high-quality @lichess games
