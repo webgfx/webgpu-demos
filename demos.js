@@ -14,6 +14,14 @@ const CATEGORY = {
 
 const demos = [
   {
+    id: "webgpu-fastvlm",
+    category: CATEGORY.WEBAI,
+    date: "2025-09-07",
+    desc: "Apple FastVLM",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/fastvlm-webgpu",
+  },
+  {
     id: "webgpu-dinov3",
     category: CATEGORY.WEBAI,
     date: "2025-09-07",
