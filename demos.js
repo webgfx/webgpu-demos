@@ -5,6 +5,9 @@ const FRAMEWORK = {
   JS: "Vanilla JavaScript",
   ONNX: "ONNX Runtime Web",
   UNITY: "Unity",
+  THREEJS: "Three.js",
+  PLAYCANVAS: "PlayCanvas",
+  BABYLONJS: "Babylon.js",
 };
 
 const CATEGORY = {
@@ -13,6 +16,22 @@ const CATEGORY = {
 };
 
 const demos = [
+  {
+    id: "webgpu-gaussian-splatting-playcanvas",
+    category: CATEGORY.WEBGPU,
+    date: "2025-09-22",
+    desc: "WebGPU Gaussian Splatting with PlayCanvas",
+    framework: FRAMEWORK.PLAYCANVAS,
+    url: "https://playcanv.as/e/p/Zp9Oh1ia/",
+  },  
+  {
+    id: "webgpu-gaussian-splatting-threejs",
+    category: CATEGORY.WEBGPU,
+    date: "2025-09-22",
+    desc: "WebGPU Gaussian Splatting with Three.js",
+    framework: FRAMEWORK.THREEJS,
+    url: "https://projects.markkellogg.org/threejs/demo_gaussian_splats_3d.php",
+  },  
   {
     id: "webgpu-dinov3",
     category: CATEGORY.WEBAI,
