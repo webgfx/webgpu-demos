@@ -17,6 +17,14 @@ const CATEGORY = {
 
 const demos = [
   {
+    id: "webgpu-aquarium",
+    category: CATEGORY.WEBGPU,
+    date: "2025-10-01",
+    desc: "WebGPU Aquarium",
+    framework: FRAMEWORK.JS,
+    url: "https://webgfx.github.io/aquarium-web/webgpu/aquarium/",
+  },
+  {
     id: "webgpu-gaussian-splatting-playcanvas",
     category: CATEGORY.WEBGPU,
     date: "2025-09-22",
