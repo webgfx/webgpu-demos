@@ -17,6 +17,14 @@ const CATEGORY = {
 
 const demos = [
   {
+    id: "webgpu-mistral3",
+    category: CATEGORY.WEBAI,
+    date: "2025-12-02",
+    desc: "Mistral 3 multimodal model",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/mistralai/Ministral_3B_WebGPU",
+  },
+  {
     id: "webgpu-aquarium",
     category: CATEGORY.WEBGPU,
     date: "2025-10-01",
