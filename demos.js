@@ -17,12 +17,36 @@ const CATEGORY = {
 
 const demos = [
   {
-    id: "webgpu-mistral3",
+    id: "webgpu-ministral3",
     category: CATEGORY.WEBAI,
     date: "2025-12-02",
     desc: "Mistral 3 multimodal model",
     framework: FRAMEWORK.TJS,
     url: "https://huggingface.co/spaces/mistralai/Ministral_3B_WebGPU",
+  },
+  {
+    id: "webgpu-supertonic",
+    category: CATEGORY.WEBAI,
+    date: "2025-11-25",
+    desc: "blazingly fast text-to-speech",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/Supertonic-TTS-WebGPU",
+  },
+  {
+    id: "webgpu-sam3",
+    category: CATEGORY.WEBAI,
+    date: "2025-11-20",
+    desc: "segment anything with concepts",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/SAM3-Tracker-WebGPU",
+  },
+  {
+    id: "webgpu-granite-docling",
+    category: CATEGORY.WEBAI,
+    date: "2025-10-08",
+    desc: "state-of-the-art document parsing",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/ibm-granite/granite-docling-258M-WebGPU",
   },
   {
     id: "webgpu-aquarium",
@@ -39,7 +63,7 @@ const demos = [
     desc: "WebGPU Gaussian Splatting with PlayCanvas",
     framework: FRAMEWORK.PLAYCANVAS,
     url: "https://playcanv.as/e/p/Zp9Oh1ia/",
-  },  
+  },
   {
     id: "webgpu-gaussian-splatting-threejs",
     category: CATEGORY.WEBGPU,
@@ -47,7 +71,7 @@ const demos = [
     desc: "WebGPU Gaussian Splatting with Three.js",
     framework: FRAMEWORK.THREEJS,
     url: "https://projects.markkellogg.org/threejs/demo_gaussian_splats_3d.php",
-  },  
+  },
   {
     id: "webgpu-dinov3",
     category: CATEGORY.WEBAI,
