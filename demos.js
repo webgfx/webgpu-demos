@@ -17,6 +17,14 @@ const CATEGORY = {
 
 const demos = [
   {
+    id: "webgpu-gpt-oss",
+    category: CATEGORY.WEBAI,
+    date: "2026-02-14",
+    desc: "GPT-OSS (20B) running locally in browser on WebGPU",
+    framework: FRAMEWORK.TJS,
+    url: "https://huggingface.co/spaces/webml-community/GPT-OSS-WebGPU",
+  },
+  {
     id: "webgpu-ministral3",
     category: CATEGORY.WEBAI,
     date: "2025-12-02",
