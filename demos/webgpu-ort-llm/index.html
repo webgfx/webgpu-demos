@@ -47,7 +47,12 @@
 
     function getModelFilesUrl(config, model) {
       let modelUrl = config.modelUrl || 'wp-27';
-      const modelBaseUrl = getModelBaseUrl(config, model);
+      // Prefer a per-model base URL (e.g. a locally-served model) unless the user
+      // explicitly passed ?modelUrl=... on the query string.
+      const explicitModelUrl = new URLSearchParams(location.search).has('modelUrl');
+      const modelBaseUrl = (!explicitModelUrl && model.modelBaseUrl)
+        ? model.modelBaseUrl
+        : getModelBaseUrl(config, model);
       return {
         configFileUrl: `${modelBaseUrl}/${model.configFileRelatedPath}`,
         modelOnnxFileUrl: `${modelBaseUrl}/${model.modelOnnxFileRelatedPath}`,
@@ -56,13 +61,34 @@
     }
 
     await loadOrt();
-    // Transformer in /workspace/project/transformers.js/dist/transformers.js
-    import { AutoTokenizer, env } from '../../transformers.js/dist/transformers.js';
+    // Tokenizer via transformers.js. Prefer the local checkout if present, else
+    // fall back to the CDN so the demo runs on a machine without it vendored.
+    // (Static import can't be conditional, so we use the CDN URL directly; local
+    // tokenizer FILES are still loaded from /models via env.localModelPath.)
+    import { AutoTokenizer, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.5/dist/transformers.min.js';
 
     function logToConsoleAndPage(i) { console.log(i); document.getElementById('status').innerText += `\n${i}`; }
 
     const phiModelsPromptBuilder = (query) => `User:${query}\nAssistant:`;
     const MODELS = {
+      "phi4": {
+        name: "phi4-mini",
+        // genai-exported Phi-4-mini (onnx-webgpu). It ships a genai_config.json
+        // instead of config.json and has NO position_ids input; load() below
+        // handles both. Served locally by default from the project root; override
+        // with ?modelUrl=<baseurl> (must contain model.onnx + model.onnx.data +
+        // genai_config.json).
+        modelBaseUrl: "/agents/ai-models/Phi-4-mini-instruct/onnx-webgpu",
+        hfTreeFullName: "microsoft/Phi-4-mini-instruct-onnx",
+        wp27TreeFullName: "Phi-4-mini-instruct/onnx-webgpu",
+        configFileRelatedPath: "genai_config.json",
+        genaiConfig: true,
+        modelOnnxFileRelatedPath: "model.onnx",
+        externalDataFileRelatedPath: "model.onnx.data",
+        externalDataFileRuntimePath: "model.onnx.data",
+        pretrainedTokenizerName: "phi4",
+        promptBuilder: phiModelsPromptBuilder,
+      },
       "phi3.5": {
         name: "phi3.5",
         hfTreeFullName: "onnx-community/Phi-3.5-mini-instruct-onnx-web",
@@ -228,16 +254,36 @@
         logToConsoleAndPage(`loading... ${model.name},  ${provider}`);
         const json_bytes = await fetchAndCache(modelFilesUrl.configFileUrl, logToConsoleAndPage);
         let textDecoder = new TextDecoder();
-        const model_config = JSON.parse(textDecoder.decode(json_bytes));
+        let model_config = JSON.parse(textDecoder.decode(json_bytes));
 
-        const model_bytes = await fetchAndCache(modelFilesUrl.modelOnnxFileUrl, logToConsoleAndPage);
-        const externalData = (modelFilesUrl.externalDataFileUrl) ? await fetchAndCache(modelFilesUrl.externalDataFileUrl, logToConsoleAndPage) : undefined;
-        let modelSize = model_bytes.byteLength;
-        if (externalData) {
-          modelSize += externalData.byteLength;
+        // genai_config.json (onnxruntime-genai export) nests the architecture
+        // under model.decoder and has no flat config.json fields. Normalize it to
+        // the flat shape the rest of load() expects.
+        if (model.genaiConfig) {
+          const d = model_config.model.decoder;
+          const eos = model_config.model.eos_token_id;
+          model_config = {
+            num_hidden_layers: d.num_hidden_layers,
+            num_attention_heads: d.num_attention_heads,
+            num_key_value_heads: d.num_key_value_heads,
+            hidden_size: d.hidden_size,
+            // head_size may be given directly; fall back to hidden_size/heads.
+            head_size: d.head_size || (d.hidden_size / d.num_attention_heads),
+            eos_token_id: Array.isArray(eos) ? eos[0] : eos,
+          };
         }
 
-        logToConsoleAndPage(`model size ${Math.round(modelSize / 1024 / 1024)} MB`);
+        const model_bytes = await fetchAndCache(modelFilesUrl.modelOnnxFileUrl, logToConsoleAndPage);
+        // Do NOT fetch the external-data weights into a JS buffer: Phi-4's file
+        // is ~2.3 GB, which exceeds the ~2 GiB max single ArrayBuffer and throws
+        // "RangeError: Array buffer allocation failed" (this is why it appeared to
+        // "always re-fetch"). Instead hand ORT the URL; ORT streams it straight
+        // into the WASM heap, and the browser HTTP cache serves it on later loads.
+        const externalDataUrl = modelFilesUrl.externalDataFileUrl;
+        let modelSize = model_bytes.byteLength;
+
+        logToConsoleAndPage(`model.onnx size ${Math.round(modelSize / 1024 / 1024)} MB`
+          + (externalDataUrl ? ` (+ external data streamed by ORT)` : ``));
 
         const opt = {
           executionProviders: [provider],
@@ -261,10 +307,12 @@
             break;
         }
 
-        if (externalData !== undefined) {
+        if (externalDataUrl !== undefined) {
           opt.externalData = [
             {
-              data: externalData,
+              // ORT fetches this URL itself (string data == URL/path) and streams
+              // it, so we never allocate a >2 GiB JS buffer.
+              data: externalDataUrl,
               path: model.externalDataFileRuntimePath,
             },
           ]
@@ -278,7 +326,12 @@
 
         ort.env.webgpu.profiling = {};
 
+        const _createT0 = performance.now();
         this.sess = await ort.InferenceSession.create(model_bytes, opt);
+        // Session create is where ORT compiles the bulk of the WebGPU pipelines
+        // (WGSL -> DXIL -> native ISA); the native-ISA stage is what the IHV
+        // driver shader cache serves, so this time is the shader-cache signal.
+        this.sessionCreateMs = performance.now() - _createT0;
 
         if (this.trace) {
           ort.env.trace = true;
@@ -287,9 +340,13 @@
         }
 
         this.eos = model_config.eos_token_id;
-        this.kv_dims = [1, model_config.num_key_value_heads, 0, model_config.hidden_size / model_config.num_attention_heads];
+        const headSize = model_config.head_size || (model_config.hidden_size / model_config.num_attention_heads);
+        this.kv_dims = [1, model_config.num_key_value_heads, 0, headSize];
         this.dtype = config.model.dtype || "float16";
         this.num_layers = model_config.num_hidden_layers;
+        // Not all exports declare position_ids (e.g. genai Phi-4 has only
+        // input_ids/attention_mask/past_key_values). Drive it only when present.
+        this.need_position_ids = this.sess.inputNames.includes("position_ids");
         this.initilize_feed();
       }
 
@@ -546,6 +603,25 @@ Decoding remaining ${llm.generatingPerf.decodedTokens - 1} tokens:
       // console.log(perf + " @@1");
       console.log(perf);
       document.getElementById('perfPre').innerText = perf;
+
+      // Optional machine-readable report for an automated harness. Enabled with
+      // ?report=1 (POSTs to /result) so a benchmark launcher can capture the
+      // shader-cache signal: session-create time + time-to-first-token.
+      if (new URLSearchParams(location.search).get('report') === '1') {
+        const ttftMs = llm.sessionCreateMs + (llm.generatingPerf.firstTokenDoneTime - llm.generatingPerf.startTime);
+        fetch('/result', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            ok: true,
+            model: model.name,
+            session_create_ms: Math.round(llm.sessionCreateMs),
+            prefill_ms: Math.round(llm.generatingPerf.firstTokenDoneTime - llm.generatingPerf.startTime),
+            ttft_ms: Math.round(ttftMs),
+            decode_tps: +(seqlen / totalTime).toFixed(2),
+            tokens: seqlen,
+          }),
+        }).catch(() => {});
+      }
       /*
       if (config.csv) {
         console.assert(false, `Unreachable: config.csv`);
@@ -571,6 +647,21 @@ Decoding remaining ${llm.generatingPerf.decodedTokens - 1} tokens:
     } catch (error) {
       console.error(error);
       document.getElementById('status').innerText = error.message;
+      if (new URLSearchParams(location.search).get('report') === '1') {
+        // Even when decode (generate) fails, session create already compiled the
+        // bulk of the WebGPU pipelines, so its time is still a valid shader-cache
+        // signal. Report it so a benchmark can measure the cache impact without a
+        // successful run.
+        fetch('/result', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            ok: false,
+            error: String(error && error.stack || error),
+            session_create_ms: (typeof llm !== 'undefined' && llm.sessionCreateMs)
+              ? Math.round(llm.sessionCreateMs) : null,
+          }),
+        }).catch(() => {});
+      }
     } finally {
       //create_download_link(cons_log);
     }
